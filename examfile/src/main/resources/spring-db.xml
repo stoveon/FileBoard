@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context
+  http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/aop
+  http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+  http://www.springframework.org/schema/mvc
+  http://www.springframework.org/schema/mvc/spring-mvc.xsd
+  http://www.springframework.org/schema/tx
+  http://www.springframework.org/schema/tx/spring-tx-4.1.xsd">
+  
+  <tx:annotation-driven transaction-manager="transactionManager"/>
+  
+  <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+  	<property name="driverClass" value="oracle.jdbc.OracleDriver"/>
+  	<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe"/>
+  	<property name="user" value="jspuser"/>
+  	<property name="password" value="1234"/>
+  	
+  	<property name="maxPoolSize" value="100"/>
+  	<property name="maxIdleTime" value="600"/>
+  	<property name="idleConnectionTestPeriod" value="300"/>
+  </bean>
+  
+  <!-- sqlSessionFactory : 마이바티스 동작규칙이 지정된 설정파일 지정 -->
+  <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+  	<property name="dataSource" ref="dataSource"/>
+  	<property name="configLocation" value="classpath:config/mybatis-config.xml"/>
+  	<property name="mapperLocations">
+  		<list>
+  			<value>classpath:config/sqlmap-FileBoard.xml</value>
+  		</list>
+  	</property>
+  </bean>
+  
+  <!-- sqlSessionTemplate : SQL쿼리 메서드와 매핑된 SQL구문을 정의한 파일 지정 -->
+  <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
+  	<constructor-arg ref="sqlSessionFactory"/>
+  </bean>
+  
+  <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+  	<property name="dataSource" ref="dataSource"/>
+  </bean>
+  
+  <!-- DAO에서 SqlSessionFactory를 설정할 수 있도록 생성자 메서드 추가! -->
+  <bean id="boardDao" class="model.FileBoardDaoImple">
+  	<constructor-arg ref="sqlSessionTemplate"/>
+  </bean>
+  
+  <context:component-scan base-package="controller"/>
+  <context:component-scan base-package="service"/>
+  
+<!--   <bean id="selectService" class="service.SelectService">
+  	<property name="boardDao" ref="boardDao"/>
+  </bean>
+  
+  <bean id="writeService" class="service.WriteService">
+  	<property name="boardDao" ref="boardDao"/>
+  </bean>
+  
+   <bean id="editService" class="service.EditService">
+  	<property name="boardDao" ref="boardDao"/>
+  </bean>
+  
+  <bean id="deleteService" class="service.DeleteService">
+  	<property name="boardDao" ref="boardDao"/>
+  </bean> -->
+  
+  
+  <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+  	<property name="maxUploadSize" value="100000000"/>
+  	<property name="maxInMemorySize" value="100000000"/>
+  </bean>
+  
+</beans>
+
+
+
+
