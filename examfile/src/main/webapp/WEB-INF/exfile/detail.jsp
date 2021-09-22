@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,7 +27,7 @@
 	</tr>
 		<tr>
 		<td>첨부 파일</td>
-		<td colspan="3"><a download href="${pageContext.request.contextPath}/board/download/${boardDto.num}">${boardDto.file}</a></td>
+		<td colspan="3"><a href="<c:url value="/board/fileDown/${boardDto.num}"/>">${boardDto.file}</a></td>
 	</tr>
 	<tr>
 		<td>내용</td>
@@ -54,5 +55,10 @@
 </div>
 </section>
 </article>
+<c:set var="message" value="${msg}"/>
+<script type="text/javascript">
+var message = ${message};
+alert(message);
+</script>
 </body>
 </html>

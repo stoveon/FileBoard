@@ -11,7 +11,7 @@
 	<!-- 전체글목록(페이지별로) -->
 	<select id="articles" parameterType="HashMap" resultType="boardDto" >
 	select * from (select rownum RNUM, "NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", "REF", "STEP", "DEPTH", "REGDATE" , "PASS", "FILE"
-	from (select * from "BOARDFILE" order by BOARDFILE."REF" desc, BOARDFILE."STEP", BOARDFILE."REGDATE" desc)) where RNUM <![CDATA[>=]]> #{startNum} and RNUM <![CDATA[<=]]> #{endNum}	
+	from (select * from "BOARDFILE" order by BOARDFILE."REGDATE" desc, BOARDFILE."REF" desc, BOARDFILE."STEP")) where RNUM <![CDATA[>=]]> #{startNum} and RNUM <![CDATA[<=]]> #{endNum}	
 	</select>
 	
 	<!-- 조회수 추가 -->

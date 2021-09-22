@@ -33,7 +33,8 @@ function writeSave(){
 </head>
 <body style="text-align: center;">
 <section>
-<form action="${pageContext.request.contextPath}/board/write" method="post" onsubmit="return writeSave()" enctype="multipart/form-data">
+<!-- <c:url value=""/>와 ${pageContext.request.contextPath}는 같음 -->
+<form action="<c:url value="/board/write"/>" method="post" onsubmit="return writeSave()" enctype="multipart/form-data">
 <input type="hidden" name="num" value="${boardDto.num}">
 <input type="hidden" name="ref" value="${boardDto.ref}">
 <input type="hidden" name="step" value="${boardDto.step}">

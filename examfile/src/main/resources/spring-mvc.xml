@@ -12,7 +12,7 @@
 	<mvc:default-servlet-handler/>
 	
 	<mvc:view-resolvers>
-		<mvc:jsp prefix="/WEB-INF" suffix=".jsp"/>
+		<mvc:jsp prefix="/WEB-INF/exfile/" suffix=".jsp"/>
 	</mvc:view-resolvers>
 	
 </beans>

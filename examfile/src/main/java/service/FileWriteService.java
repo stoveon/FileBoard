@@ -3,6 +3,7 @@ package service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,34 +18,35 @@ public class FileWriteService {
 	private FileBoardDaoImple boardDao;
 	
 	public boolean write(MultipartFile file, BoardDto boardDto) throws IOException {
-		String fileName = file.getOriginalFilename();
-		String filePath = "c:\\board\\fileUpload";
-		FileOutputStream fos = null;
+		UUID uuid = UUID.randomUUID();
+		//중복된 이름의 파일을 저장하지 않기 위해 UUID 키값 생성
+		
+		String fileName = uuid.toString() + "_" + file.getOriginalFilename();
+		
+		String filePath = "C:\\board\\FileUpload";
 		try {
-//			File saveFile = new File(filePath + fileName);
-//			file.transferTo(saveFile);
+			File saveFile = new File(filePath);
 			
-			byte[] fileBuffer = file.getBytes();
-			//MultipartFile의 데이터를 바이트 배열로 추출
+			if(saveFile.exists() == false) {
+				saveFile.mkdirs();
+			}
+			//저장 폴더 없으면 생성
 			
-			fos = new FileOutputStream(filePath + fileName);
-			fos.write(fileBuffer);
-			//FileOutputStream 클래스의 write()로 파일을 filePath에 저장
+			saveFile = new File(filePath + "\\" + fileName);
+			file.transferTo(saveFile);
+			//전달받은 파일 특정 경로에 특정 파일명으로 저장	
 			
+			boardDto.setFile(fileName);			
 			boardDao.articleInsert(boardDto);
 			return true;
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
-		}finally {
-			if(fos != null) {
-				fos.close();
-			}
 		}
 		return false;
 	}
 	
-	public void reple(int num) {
+	public void reple(MultipartFile file, int num) {
 		BoardDto tmp = boardDao.getArticle(num);
 		boardDao.artticleInsertRef(tmp);
 	}

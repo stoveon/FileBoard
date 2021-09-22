@@ -68,7 +68,7 @@ public class FileBoardController {
 		model.addAttribute("pageBlock", pageBlock);
 		model.addAttribute("totalCount", totalCount);
 
-		return "/exfile/list";
+		return "list";
 	}
 	
 //	@RequestMapping(value="detailF/{num}", method=RequestMethod.GET)
@@ -87,8 +87,35 @@ public class FileBoardController {
 		}else {
 			tmp = selectService.read(num);
 		}
+//		System.out.println(tmp.getFile());
+		String[] str= tmp.getFile().split("_");
+		String fileName = "";
+		for(int i = 1; i < str.length; i++) {
+			if(!((str.length-1) == i)) {
+				fileName = str[i] + "_";
+			}else {
+				fileName += str[i];
+			}
+		}
+		tmp.setFile(fileName);
+//		System.out.println(tmp.getFile());
 		model.addAttribute("boardDto", tmp);
-		return "/exfile/detail";
+		return "detail";
+	}
+	
+	@RequestMapping(value="fileDown/{num}")
+	public String fileDown(@PathVariable int num, Model model) {
+		if(num == 0) {
+			return "redirect:/board/list";
+		}
+		boolean check = selectService.fileDown(num);
+		if(check == true) {
+			model.addAttribute("msg", "C드라이브에 파일이 저장되었습니다.");
+		}else if(check == false) {
+			model.addAttribute("msg", "파일이 저장되지 않았습니다.");
+		}
+		
+		return "redirect:/board/detail/" + num;
 	}
 	
 	@RequestMapping(value="write", method=RequestMethod.GET)
@@ -99,17 +126,19 @@ public class FileBoardController {
 		tmp.setStep(0);
 		tmp.setDepth(0);
 		model.addAttribute("boardDto", tmp);
-		return "/exfile/writeForm";
+		return "writeForm";
 	}
 	
 	@RequestMapping(value="write", method=RequestMethod.POST)
 	public String write(@RequestParam("file") MultipartFile file, @Valid BoardDto boardDto, BindingResult bindingResult, Model model) throws IOException {
 		if(boardDto.getNum() != 0) {
-			writeService.reple(boardDto.getNum());
+			writeService.reple(file, boardDto.getNum());
 		}
-		if(bindingResult.hasErrors()) {
-			return "/exfile/writeForm";
-		}
+		System.out.println("num : " + boardDto.getNum());
+		System.out.println("file " + file);
+//		if(bindingResult.hasErrors()) {
+//			return "writeForm";
+//		}
 		writeService.write(file, boardDto);
 		return "redirect:/board/list";
 	}
@@ -118,7 +147,8 @@ public class FileBoardController {
 	public String edit(@PathVariable int num, Model model) {
 		BoardDto boardDto = selectService.read(num);
 		model.addAttribute("boardDto", boardDto);
-		return "/exfile/updateForm";
+		model.addAttribute("check", false);
+		return "updateForm";
 	}
 	
 	@RequestMapping(value="update/{num}", method=RequestMethod.POST)
@@ -126,7 +156,7 @@ public class FileBoardController {
 			BindingResult bindingResult, String checkPass,
 			SessionStatus sessionStatus, Model model) {
 		if(bindingResult.hasErrors()) {
-			return "/exfile/updateForm";
+			return "updateForm";
 		}else {
 			BoardDto tmp = boardDto;
 			tmp.setPass(checkPass);
@@ -136,7 +166,7 @@ public class FileBoardController {
 				return "redirect:/board/list";
 			}else {
 				model.addAttribute("msg", "비밀번호가 일치하지 않습니다.");
-				return "/exfile/updateForm";
+				return "updateForm";
 			}
 		}
 	}
@@ -144,26 +174,31 @@ public class FileBoardController {
 	@RequestMapping(value="delete/{num}", method=RequestMethod.GET)
 	public String delete(@PathVariable int num, Model model) {
 		model.addAttribute("num", num);
-		return "/exfile/deleteForm";
+		return "deleteForm";
 	}
 	
 	@RequestMapping(value="delete/{num}", method=RequestMethod.POST)
-	public String delete(@PathVariable int num, String checkPass, Model model) {
-		BoardDto tmp = new BoardDto();
-		tmp.setNum(num);
-		tmp.setPass(checkPass);
-		boolean check = deleteService.delete(tmp);
+	public String delete(BoardDto boardDto, Model model) {
+//		System.out.println(boardDto.getNum());
+//		System.out.println(boardDto.getCheckPass());
+		if(boardDto.getCheckPass().isEmpty()) {
+			model.addAttribute("num", boardDto.getNum());
+			model.addAttribute("msg", "비밀번호를 입력하세요.");
+			return "redirect:/board/delete/" + boardDto.getNum();
+		}
+		boolean check = deleteService.delete(boardDto);
 		if(!check) {
-			model.addAttribute("num", num);
-			model.addAttribute("msg", "비밀번호가 일치하지 않습니다.");
-			return "/exfile/deleteForm";
+			model.addAttribute("num", boardDto.getNum());
+			model.addAttribute("msg", "다시 입력해주세요.");
+			return "redirect:/board/delete/" + boardDto.getNum();
 		}
 		return "redirect:/board/list";
 	}
 	
-	@RequestMapping(value="download/{num}")
-	public String doloadFile() {
-		return "";
+	@RequestMapping(value="fileDel/{num}")
+	public String fileDel(@PathVariable int num, Model model) {
+		model.addAttribute("check", true);
+		return "redirect:/board/update";
 	}
 
 }
