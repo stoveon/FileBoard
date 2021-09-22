@@ -72,5 +72,9 @@ public class FileBoardDaoImple implements BoardDao{
 	public void articeCounterPlus(int num) {
 		sqlSessionTemplate.update("counterPlus", num);
 	}
+	@Override
+	public int maxRef() {
+		return sqlSessionTemplate.selectOne("maxRef");
+	}
 
 }

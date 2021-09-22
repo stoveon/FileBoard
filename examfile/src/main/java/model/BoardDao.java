@@ -15,4 +15,5 @@ public interface BoardDao {
 	public void articleUpdate(BoardDto article);
 	public void articleDelete(int num);
 	public void articeCounterPlus(int num);
+	public int maxRef();
 }
