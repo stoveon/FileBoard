@@ -71,17 +71,10 @@ public class FileBoardController {
 		return "list";
 	}
 	
-//	@RequestMapping(value="detailF/{num}", method=RequestMethod.GET)
-//	public String detail(@PathVariable int num, Model model) {
-//		model.addAttribute("num", num);
-//		model.addAttribute("boardDto", new BoardDto());
-//		return "/exfile/detail";
-//	}
-	
 	@RequestMapping(value="detail/{num}")
 	public String detail(Model model, @PathVariable int num, String type) {
 		BoardDto tmp = null;
-		System.out.println(num + " / " + type);
+//		System.out.println(num + " / " + type);
 		if(type != null) {
 			tmp = selectService.move(num, type);
 		}else {
@@ -120,32 +113,56 @@ public class FileBoardController {
 	
 	@RequestMapping(value="write", method=RequestMethod.GET)
 	public String write(Model model) {
-		BoardDto tmp = new BoardDto();
-		tmp.setNum(0);
-		tmp.setRef(1);
-		tmp.setStep(0);
-		tmp.setDepth(0);
-		model.addAttribute("boardDto", tmp);
+		model.addAttribute("checkRe", false);
+		model.addAttribute("boardDto", new BoardDto());
+		System.out.println("write.get");
 		return "writeForm";
 	}
 	
 	@RequestMapping(value="write", method=RequestMethod.POST)
-	public String write(@RequestParam("file") MultipartFile file, @Valid BoardDto boardDto, BindingResult bindingResult, Model model) throws IOException {
-		if(boardDto.getNum() != 0) {
-			writeService.reple(file, boardDto.getNum());
+	public String write(@RequestParam("fileUp") MultipartFile fileUp, @Valid BoardDto boardDto){
+		try {		//이건 서비스에서 던지거나 예외처리하기
+			boardDto.setNum(0);
+			writeService.info(boardDto);
+			writeService.write(fileUp, boardDto);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		System.out.println("num : " + boardDto.getNum());
-		System.out.println("file " + file);
-//		if(bindingResult.hasErrors()) {
-//			return "writeForm";
-//		}
-		writeService.write(file, boardDto);
+		return "redirect:/board/list";
+	}
+	
+	@RequestMapping(value="write/{num}", method=RequestMethod.GET)
+	public String writeRe(BoardDto boardDto, Model model) {
+		BoardDto tmp = writeService.info(boardDto);
+		model.addAttribute("boardDto", tmp);
+		model.addAttribute("checkRe", true);
+		return "writeForm";
+	}
+	
+	@RequestMapping(value="write/{num}", method=RequestMethod.POST)
+	public String writeRe(@PathVariable("fileUp") MultipartFile fileUp, @Valid BoardDto boardDto) {
+		try {
+			writeService.reple(boardDto);
+			writeService.write(fileUp, boardDto);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return "redirect:/board/list";
 	}
 	
 	@RequestMapping(value="update/{num}", method=RequestMethod.GET)
 	public String edit(@PathVariable int num, Model model) {
 		BoardDto boardDto = selectService.read(num);
+		String[] str= boardDto.getFile().split("_");
+		String fileName = "";
+		for(int i = 1; i < str.length; i++) {
+			if(!((str.length-1) == i)) {
+				fileName = str[i] + "_";
+			}else {
+				fileName += str[i];
+			}
+		}
+		boardDto.setFile(fileName);
 		model.addAttribute("boardDto", boardDto);
 		model.addAttribute("check", false);
 		return "updateForm";
@@ -153,21 +170,20 @@ public class FileBoardController {
 	
 	@RequestMapping(value="update/{num}", method=RequestMethod.POST)
 	public String edit(@Valid @ModelAttribute BoardDto boardDto, 
-			BindingResult bindingResult, String checkPass,
-			SessionStatus sessionStatus, Model model) {
-		if(bindingResult.hasErrors()) {
-			return "updateForm";
+		String checkPass, SessionStatus sessionStatus, Model model, 
+		@RequestParam("fileUp") MultipartFile fileUp) {
+		boolean check = false;
+		if(fileUp.isEmpty()) {
+			check = editService.editExceptFile(boardDto);
 		}else {
-			BoardDto tmp = boardDto;
-			tmp.setPass(checkPass);
-			boolean check = editService.edit(tmp);
-			if(check == true) {
-				sessionStatus.setComplete();
-				return "redirect:/board/list";
-			}else {
-				model.addAttribute("msg", "비밀번호가 일치하지 않습니다.");
-				return "updateForm";
-			}
+			check = editService.edit(fileUp, boardDto);
+		}
+		if(check == true) {
+			sessionStatus.setComplete();
+			return "redirect:/board/list";
+		}else {
+			model.addAttribute("msg", "비밀번호가 일치하지 않습니다.");
+			return "updateForm";
 		}
 	}
 	
@@ -196,9 +212,10 @@ public class FileBoardController {
 	}
 	
 	@RequestMapping(value="fileDel/{num}")
-	public String fileDel(@PathVariable int num, Model model) {
+	public String fileDel(BoardDto boardDto, Model model) {
+		model.addAttribute("boardDto", boardDto);
 		model.addAttribute("check", true);
-		return "redirect:/board/update";
+		return "updateForm";
 	}
 
 }

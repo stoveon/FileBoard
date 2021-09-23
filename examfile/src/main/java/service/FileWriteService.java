@@ -17,11 +17,11 @@ public class FileWriteService {
 	@Autowired
 	private FileBoardDaoImple boardDao;
 	
-	public boolean write(MultipartFile file, BoardDto boardDto) throws IOException {
+	public boolean write(MultipartFile fileUp, BoardDto boardDto) throws IOException {
 		UUID uuid = UUID.randomUUID();
 		//중복된 이름의 파일을 저장하지 않기 위해 UUID 키값 생성
 		
-		String fileName = uuid.toString() + "_" + file.getOriginalFilename();
+		String fileName = uuid.toString() + "_" + fileUp.getOriginalFilename();
 		
 		String filePath = "C:\\board\\FileUpload";
 		try {
@@ -33,7 +33,7 @@ public class FileWriteService {
 			//저장 폴더 없으면 생성
 			
 			saveFile = new File(filePath + "\\" + fileName);
-			file.transferTo(saveFile);
+			fileUp.transferTo(saveFile);
 			//전달받은 파일 특정 경로에 특정 파일명으로 저장	
 			
 			boardDto.setFile(fileName);			
@@ -46,8 +46,27 @@ public class FileWriteService {
 		return false;
 	}
 	
-	public void reple(MultipartFile file, int num) {
-		BoardDto tmp = boardDao.getArticle(num);
-		boardDao.artticleInsertRef(tmp);
+	public void reple(BoardDto boardDto) {
+		BoardDto tmp = boardDao.getArticle(boardDto.getNum());
+		System.out.println("reple ref: " + tmp.getRef());
+		System.out.println("reple step: " + tmp.getStep());
+		boardDao.articleInsertRef(tmp);
+	}
+	
+	public BoardDto info(BoardDto boardDto) {
+		BoardDto tmp = new BoardDto();
+		if(boardDto.getNum() != 0) {
+			tmp = boardDao.getArticle(boardDto.getNum());
+			tmp.setStep(tmp.getStep()+1);
+			tmp.setDepth(tmp.getDepth()+1);
+			tmp.setReadcount(0);
+		}else {
+			tmp.setRef(boardDao.maxRef()+1);
+			tmp.setStep(1);
+			tmp.setDepth(0);
+			tmp.setReadcount(0);
+		}
+		System.out.println(tmp.toString());
+		return tmp;
 	}
 }

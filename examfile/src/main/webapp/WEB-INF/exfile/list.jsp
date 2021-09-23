@@ -65,7 +65,7 @@
 				</div>
 			</c:if>
 			<div>
-				<input type="button" value="index로 이동" onClick="location.href='<c:url value="/index"/>'" /> 
+			 	<%-- <input type="button" value="index로 이동" onClick="location.href='<c:url value="/index"/>'" />  --%>
 					<input type="button" value="글쓰기" onClick="location.href='<c:url value="/board/write"/>'" />
 			</div>
 		</section>

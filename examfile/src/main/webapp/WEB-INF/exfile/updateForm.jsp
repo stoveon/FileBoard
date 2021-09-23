@@ -11,7 +11,7 @@
 <body style="text-align: center;">
 <article>
 <section>
-	<form action="<c:url value="/board/update"/>" method="post" enctype="multipart/form-data">
+	<form action="<c:url value="/board/update/${boardDto.num}"/>" method="post" enctype="multipart/form-data">
 	<table border="1" style="margin: auto;">
 	<tr>
 		<td>제목</td>
@@ -23,10 +23,10 @@
 			<c:set var="check" value="${empty check? false : check}" />
 			<c:if test="${check == false}">
 				<a href="<c:url value="/board/fileDown/${boardDto.num}"/>">${boardDto.file}</a>
-				<input type="button" value="파일 삭제" onClick="<c:url value="/board/fileDel?num=${boardDto.num}"/>"/>
+				<input type="button" value="파일 삭제" onClick="location.href='<c:url value="/board/fileDel/${boardDto.num}"/>'"/>
 			</c:if>
 			<c:if test="${check == true}">
-				<input type="file" name="file" />
+				<input type="file" name="fileUp" />
 			</c:if>
 			<input type="hidden" name="file" value="${boardDto.file}"/>
 			<input type="hidden" name="num" value="${boardDto.num}"/>

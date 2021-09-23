@@ -51,7 +51,7 @@ public class FileBoardDaoImple implements BoardDao{
 	}
 
 	@Override
-	public void artticleInsertRef(BoardDto article) {
+	public void articleInsertRef(BoardDto article) {
 		Map<String, Integer> tmp = new HashMap<String, Integer>();
 		tmp.put("ref", article.getRef());
 		tmp.put("step", article.getStep());
@@ -75,6 +75,10 @@ public class FileBoardDaoImple implements BoardDao{
 	@Override
 	public int maxRef() {
 		return sqlSessionTemplate.selectOne("maxRef");
+	}
+	@Override
+	public void updateExceptFile(BoardDto article) {
+		sqlSessionTemplate.update("updateExceptFile", article);
 	}
 
 }

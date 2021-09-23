@@ -5,6 +5,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+<c:set var="message" value="${msg}"/>
+<c:if test="${!message eq null}">
+<script type="text/javascript">
+	var message = ${message};
+	alert(message);
+</script>
+</c:if>
 <meta charset="UTF-8">
 <title>파일 게시판 상세페이지</title>
 </head>
@@ -39,7 +46,7 @@
 	</tr>
 </table>
 <div style="margin: 10px;">
-		<form method="post" action="${pageContext.request.contextPath}/board/write/${boardDto.num}">
+		<form method="get" action="${pageContext.request.contextPath}/board/write/${boardDto.num}">
 		<input type="hidden" name="num" value="${boardDto.num}">
 		<input type="hidden" name="ref" value="${boardDto.ref}">
 		<input type="hidden" name="step" value="${boardDto.step}">
@@ -55,10 +62,5 @@
 </div>
 </section>
 </article>
-<c:set var="message" value="${msg}"/>
-<script type="text/javascript">
-var message = ${message};
-alert(message);
-</script>
 </body>
 </html>

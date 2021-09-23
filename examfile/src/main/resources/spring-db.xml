@@ -75,13 +75,13 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   
   
   <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-  	<property name="maxUploadSize" value="100000000"/>
-  	<property name="maxInMemorySize" value="100000000"/>
+  	<property name="maxUploadSize" value="200000000"/>
+  	<property name="maxInMemorySize" value="200000000"/>
   </bean>
   
   <!-- 파일 업로드 경로 정의 -->
 <!--   <bean id="uploadPath" class="java.lang.String">
-  	<constructor-arg value="C:\\Users\\board\\UploadFile" />
+  	<constructor-arg value="C:\\board\\FileUpload" />
   </bean> -->
   
 </beans>

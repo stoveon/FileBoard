@@ -5,59 +5,63 @@
 <mapper namespace="fileBoardDao">
 	<!-- 게시글수 -->
 	<select id="count" resultType="Integer">
-		select count(*) from "BOARDFILE"
+		select count(*) from BOARDFILE
 	</select>
 	
 	<!-- 전체글목록(페이지별로) -->
 	<select id="articles" parameterType="HashMap" resultType="boardDto" >
-	select * from (select rownum RNUM, "NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", "REF", "STEP", "DEPTH", "REGDATE" , "PASS", "FILE"
-	from (select * from "BOARDFILE" order by BOARDFILE."REF" desc, BOARDFILE."STEP", BOARDFILE."REGDATE" desc)) where RNUM <![CDATA[>=]]> #{startNum} and RNUM <![CDATA[<=]]> #{endNum}	
+	select * from (select rownum RNUM, "NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", "REF", "STEP", "DEPTH", "REGDATE", "PASS", "FILE"
+	from (select * from BOARDFILE order by BOARDFILE.REF desc, BOARDFILE.STEP, BOARDFILE.REGDATE desc)) where RNUM <![CDATA[>=]]> #{startNum} and RNUM <![CDATA[<=]]> #{endNum}	
 	</select>
 	
 	<!-- 조회수 추가 -->
 	<update id="counterPlus" parameterType="Integer">
-		update "BOARDFILE" set "READCOUNT" = "READCOUNT" + 1 where "NUM" =#{num}
+		update BOARDFILE set READCOUNT = READCOUNT + 1 where NUM =#{num}
 	</update>
 	
 	<!-- 해당 게시글 가져오기 -->
 	<select id="detail" parameterType="Integer" resultType="boardDto">
 		select rownum RNUM, "NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", 
-		"REF", "STEP", "DEPTH", "REGDATE" , "PASS", "FILE" from "BOARDFILE" where "NUM" = #{num}
+		"REF", "STEP", "DEPTH", "REGDATE", "PASS", "FILE" from BOARDFILE where "NUM" = #{num}
 	</select>
 	
 	<!-- 이전 게시글 -->
 	<select id="agoNum" parameterType="Integer" resultType="Integer">
-		select max(NUM) from "BOARDFILE" where "NUM" <![CDATA[<]]> #{num}
+		select max(NUM) from BOARDFILE where NUM <![CDATA[<]]> #{num}
 	</select>
 	
 	<!-- 다음 게시글 -->  
 	<select id="nextNum" parameterType="Integer" resultType="Integer">
-		select min(NUM) from "BOARDFILE" where "NUM" <![CDATA[>]]> #{num}
+		select min(NUM) from BOARDFILE where NUM <![CDATA[>]]> #{num}
 	</select>
 	
-	<select id="maxRef">
+	<select id="maxRef" resultType="Integer">
 		select max(NUM) MNUM from BOARDFILE
 	</select>
 	
 	<!-- 게시글 추가 -->
 	<insert id="insert" parameterType="boardDto">
-		insert into "BOARDFILE"("NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", "REF", "STEP", "DEPTH", "REGDATE" , "PASS", "FILE") 
+		insert into BOARDFILE("NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", "REF", "STEP", "DEPTH", "REGDATE", "PASS", "FILE") 
 		values(BOARDFILE_SEQ.nextval, #{writer}, #{title}, #{content}, #{readcount}, #{ref}, #{step}, #{depth}, sysdate, #{pass}, #{file})
 	</insert>
 	
 	<!-- 답글용 -->
 	<update id="reply" parameterType="HashMap" >
-		update "BOARDFILE" set "STEP" = "STEP" +1 where "REF" = #{ref} AND "STEP" &gt; #{step}
+		update BOARDFILE set STEP = STEP +1 where REF = #{ref} AND STEP &gt; #{step}
 	</update>
 	
 	<!-- 수정 -->
 	<update id="update" parameterType="boardDto">
-		update "BOARDFILE" set "TITLE" = #{title}, "CONTENT" = #{content}, "FILE" = #{file}, "REGDATE" = sysdate where "NUM" = #{num}
+		update BOARDFILE set "TITLE" = #{title}, "CONTENT" = #{content}, "FILE" = #{file}, "REGDATE" = sysdate where "NUM" = #{num}
+	</update>
+	
+		<update id="updateExceptFile" parameterType="boardDto">
+		update BOARDFILE set "TITLE" = #{title}, "CONTENT" = #{content}, "REGDATE" = sysdate where "NUM" = #{num}
 	</update>
 	
 	<!-- 삭제 -->
 	<delete id="delete" parameterType="Integer">
-		delete "BOARDFILE" where "NUM" = #{num}
+		delete BOARDFILE where NUM = #{num}
 	</delete>
 
 </mapper>
