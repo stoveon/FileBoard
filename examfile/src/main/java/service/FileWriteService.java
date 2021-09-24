@@ -48,8 +48,6 @@ public class FileWriteService {
 	
 	public void reple(BoardDto boardDto) {
 		BoardDto tmp = boardDao.getArticle(boardDto.getNum());
-		System.out.println("reple ref: " + tmp.getRef());
-		System.out.println("reple step: " + tmp.getStep());
 		boardDao.articleInsertRef(tmp);
 	}
 	
@@ -61,12 +59,11 @@ public class FileWriteService {
 			tmp.setDepth(tmp.getDepth()+1);
 			tmp.setReadcount(0);
 		}else {
-			tmp.setRef(boardDao.maxRef()+1);
+			tmp.setRef(boardDao.maxNum()+1);
 			tmp.setStep(1);
 			tmp.setDepth(0);
 			tmp.setReadcount(0);
 		}
-		System.out.println(tmp.toString());
 		return tmp;
 	}
 }

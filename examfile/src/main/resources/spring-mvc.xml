@@ -14,5 +14,4 @@
 	<mvc:view-resolvers>
 		<mvc:jsp prefix="/WEB-INF/exfile/" suffix=".jsp"/>
 	</mvc:view-resolvers>
-	
 </beans>

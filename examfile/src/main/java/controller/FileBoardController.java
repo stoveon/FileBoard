@@ -1,10 +1,6 @@
 package controller;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +10,6 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +20,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import model.BoardDto;
+import model.SearchCommand;
 import service.FileDeleteService;
 import service.FileEditService;
 import service.FileSelectService;
@@ -44,22 +40,29 @@ public class FileBoardController {
 	private FileDeleteService deleteService;
 
 	@RequestMapping(value="list")
-	public String list(Model model, HttpServletRequest request) {
-		String pageNum = request.getParameter("pageNum");
-		int currentPage = 0;
-		if(pageNum == null) {
-			currentPage = 1;
+	public String list(SearchCommand search, Model model, SessionStatus session, @RequestParam(name="pageNum", defaultValue = "1") int pageNum) {
+		Map<String, Object> tmp = null;
+		List<BoardDto> articleList = null;
+		System.out.println("search: "+search.toString());
+			if(search.getSearchType() != null && search.getSearchType() == null) {
+				model.addAttribute("msg-noneWord", "검색어를 입력하세요.");
+				return "redirect:/board/list";
+			}else if(search.getSearchType() != null && search.getSearchType() != null){
+				tmp = selectService.search(pageNum, search);
+				articleList = (List<BoardDto>) tmp.get("articleList");
 		}else {
-			currentPage = Integer.parseInt(pageNum);
+			tmp = selectService.list(pageNum);
+			articleList = (List<BoardDto>) tmp.get("articleList");
 		}
-		Map<String, Object> tmp = selectService.list(currentPage);
-		List<BoardDto> articleList = (List<BoardDto>) tmp.get("articleList");
+		
+		System.out.println(articleList);
 		int startNum = (Integer) tmp.get("startNum");
 		int endNum = (Integer) tmp.get("endNum");
 		int startPaging = (Integer) tmp.get("startPaging");
 		int endPaging = (Integer) tmp.get("endPaging");
 		int pageBlock = (Integer) tmp.get("pageBlock");
 		int totalCount = (Integer) tmp.get("totalCount");
+		
 		model.addAttribute("articleList", articleList);
 		model.addAttribute("startNum", startNum);
 		model.addAttribute("endNum", endNum);
@@ -74,13 +77,13 @@ public class FileBoardController {
 	@RequestMapping(value="detail/{num}")
 	public String detail(Model model, @PathVariable int num, String type) {
 		BoardDto tmp = null;
-//		System.out.println(num + " / " + type);
+		selectService.hitIt(num);
 		if(type != null) {
 			tmp = selectService.move(num, type);
-		}else {
+		} else {
 			tmp = selectService.read(num);
 		}
-//		System.out.println(tmp.getFile());
+		
 		String[] str= tmp.getFile().split("_");
 		String fileName = "";
 		for(int i = 1; i < str.length; i++) {
@@ -91,8 +94,9 @@ public class FileBoardController {
 			}
 		}
 		tmp.setFile(fileName);
-//		System.out.println(tmp.getFile());
 		model.addAttribute("boardDto", tmp);
+		model.addAttribute("maxNum", selectService.maxAndMin().get("MAXNUM"));
+		model.addAttribute("minNum", selectService.maxAndMin().get("MINNUM"));
 		return "detail";
 	}
 	
@@ -113,17 +117,17 @@ public class FileBoardController {
 	
 	@RequestMapping(value="write", method=RequestMethod.GET)
 	public String write(Model model) {
+		BoardDto tmp = new BoardDto();
+		tmp.setNum(0);
+		tmp = writeService.info(tmp);
 		model.addAttribute("checkRe", false);
-		model.addAttribute("boardDto", new BoardDto());
-		System.out.println("write.get");
+		model.addAttribute("boardDto", tmp);
 		return "writeForm";
 	}
 	
 	@RequestMapping(value="write", method=RequestMethod.POST)
 	public String write(@RequestParam("fileUp") MultipartFile fileUp, @Valid BoardDto boardDto){
 		try {		//이건 서비스에서 던지거나 예외처리하기
-			boardDto.setNum(0);
-			writeService.info(boardDto);
 			writeService.write(fileUp, boardDto);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -195,8 +199,6 @@ public class FileBoardController {
 	
 	@RequestMapping(value="delete/{num}", method=RequestMethod.POST)
 	public String delete(BoardDto boardDto, Model model) {
-//		System.out.println(boardDto.getNum());
-//		System.out.println(boardDto.getCheckPass());
 		if(boardDto.getCheckPass().isEmpty()) {
 			model.addAttribute("num", boardDto.getNum());
 			model.addAttribute("msg", "비밀번호를 입력하세요.");

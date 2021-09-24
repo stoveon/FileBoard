@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import model.BoardDto;
 import model.FileBoardDaoImple;
+import model.SearchCommand;
 
 @Service
 public class FileSelectService {
@@ -27,7 +28,7 @@ public class FileSelectService {
 		int startNum = (currentPage -1) * pageBlock + 1;
 		int endNum = startNum + pageBlock-1;
 		int startPaging = 1;
-		int endPaging = (int) Math.ceil((double)totalCount / 5);
+		int endPaging = (int) Math.ceil((double)totalCount / pageBlock);
 		
 		if(totalCount > 0) {
 			startPaging = 1;
@@ -53,21 +54,21 @@ public class FileSelectService {
 	}
 	
 	public BoardDto read(int num) {
-		boardDao.articeCounterPlus(num);
 		return boardDao.getArticle(num);
+	}
+	
+	public void hitIt(int num) {
+		boardDao.articeCounterPlus(num);
 	}
 	
 	public BoardDto move(int num, String type) {
 		BoardDto tmp = null;
-		boardDao.articeCounterPlus(num);
 		tmp = boardDao.getArticle(num);
 		if(type != null) {
 			if(type.equals("before")) {
 				tmp = boardDao.getAgoArticle(num);
-				boardDao.articeCounterPlus(tmp.getNum());
 			}else if(type.equals("after")) {
 				tmp = boardDao.getNextArticle(num);
-				boardDao.articeCounterPlus(tmp.getNum());
 			}
 		}
 		return tmp;
@@ -128,5 +129,52 @@ public class FileSelectService {
 			}catch(IOException e) {}
 		}
 		return false;
+	}
+
+	public int maxNum() {
+		return boardDao.maxNum();
+	}
+	
+	public int minNum() {
+		return boardDao.minNum();
+	}
+	
+	public Map<String, Integer> maxAndMin(){
+		return boardDao.maxAndMin();
+	}
+	
+	public Map<String, Object> search(int currentPage, SearchCommand search){
+		List<BoardDto> articleList = null;
+		if(search.getSearchType().equals("searchTitle")) {
+			String type = "TITLE";
+			articleList = boardDao.search(type, search.getSearchBox());
+		}else if(search.getSearchType().equals("searchContent")) {
+			String type = "CONTENT";
+			articleList = boardDao.search(type, search.getSearchBox());			
+		}else {
+			articleList = boardDao.searchTotal(search.getSearchBox());
+		}
+		
+		int totalCount = articleList.size();
+		int pageBlock = 5;
+		int startNum = (currentPage -1) * pageBlock + 1;
+		int endNum = startNum + pageBlock-1;
+		int startPaging = 1;
+		int endPaging = (int) Math.ceil((double)totalCount / pageBlock);
+		
+		if(totalCount > 0) {
+			startPaging = 1;
+		}
+
+		Map<String, Object> list = new HashMap<String, Object>();
+		list.put("articleList", articleList);
+		list.put("startNum", startNum);
+		list.put("endNum", endNum);
+		list.put("startPaging", startPaging);
+		list.put("endPaging", endPaging);
+		list.put("pageBlock", pageBlock);
+		list.put("totalCount", totalCount);
+		
+		return list;
 	}
 }

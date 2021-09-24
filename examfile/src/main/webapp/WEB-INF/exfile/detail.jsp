@@ -41,8 +41,18 @@
 		<td colspan="3">${boardDto.content}</td>
 	</tr>
 	<tr>
-		<td colspan="2"><a href="${pageContext.request.contextPath}/board/detail/${boardDto.num}?type=before">이전글</a></td>
-		<td colspan="2"><a href="${pageContext.request.contextPath}/board/detail/${boardDto.num}?type=after">다음글</a></td>
+	<c:if test="${maxNum != boardDto.num || minNum != boardDto.num}">
+		<c:set var="size" value="2"/>
+	</c:if>
+	<c:if test="${maxNum == boardDto.num || minNum == boardDto.num}">
+		<c:set var="size" value="4"/>
+	</c:if>
+		<c:if test="${minNum != boardDto.num}">
+		<td colspan="${size}"><a href="${pageContext.request.contextPath}/board/detail/${boardDto.num}?type=before">이전글</a></td>
+		</c:if>
+		<c:if test="${maxNum != boardDto.num}">
+		<td colspan="${size}"><a href="${pageContext.request.contextPath}/board/detail/${boardDto.num}?type=after">다음글</a></td>
+		</c:if>
 	</tr>
 </table>
 <div style="margin: 10px;">
@@ -56,7 +66,6 @@
 		<input type="button" onClick="javascript:location.href='${pageContext.request.contextPath}/board/update/${boardDto.num}'" value="수정">
 
 		<input type="button" onClick="javascript:location.href='${pageContext.request.contextPath}/board/delete/${boardDto.num}'" value="삭제">
-
 		<input type="button" onClick="javascript:location.href='${pageContext.request.contextPath}/board/list'" value="목록">
 		</form>
 </div>

@@ -14,11 +14,6 @@
 	from (select * from BOARDFILE order by BOARDFILE.REF desc, BOARDFILE.STEP, BOARDFILE.REGDATE desc)) where RNUM <![CDATA[>=]]> #{startNum} and RNUM <![CDATA[<=]]> #{endNum}	
 	</select>
 	
-	<!-- 조회수 추가 -->
-	<update id="counterPlus" parameterType="Integer">
-		update BOARDFILE set READCOUNT = READCOUNT + 1 where NUM =#{num}
-	</update>
-	
 	<!-- 해당 게시글 가져오기 -->
 	<select id="detail" parameterType="Integer" resultType="boardDto">
 		select rownum RNUM, "NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", 
@@ -35,8 +30,28 @@
 		select min(NUM) from BOARDFILE where NUM <![CDATA[>]]> #{num}
 	</select>
 	
-	<select id="maxRef" resultType="Integer">
+	<select id="maxNum" resultType="Integer">
 		select max(NUM) MNUM from BOARDFILE
+	</select>
+	
+	<select id="minNum" resultType="Integer">
+		select min(NUM) NNUM from BOARDFILE
+	</select>
+	
+	<select id="maxAndMin" resultType="HashMap">
+		select distinct(select max(NUM) from BOARDFILE) MAXNUM, (select min(NUM) from BOARDFILE) MINNUM from BOARDFILE
+	</select>
+	
+	<select id="search" parameterType="HashMap" resultType="boardDto">
+		select rownum RNUM, "NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", "REF", "STEP", "DEPTH", "REGDATE", "PASS", "FILE"
+		from (select * from BOARDFILE order by BOARDFILE."REF" desc, BOARDFILE."STEP", BOARDFILE."REGDATE" desc) 
+		where ${type} like '%' || #{search} || '%'
+	</select>
+
+	<select id="searchTotal" parameterType="String" resultType="boardDto">
+		select rownum RNUM, "NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", "REF", "STEP", "DEPTH", "REGDATE", "PASS", "FILE"
+		from (select * from BOARDFILE order by BOARDFILE."REF" desc, BOARDFILE."STEP", BOARDFILE."REGDATE" desc)) 
+		where "TITLE" like '%' || #{searchTotal} || '%' or "CONTENT" like '%' || #{searchTotal} || '%'
 	</select>
 	
 	<!-- 게시글 추가 -->
@@ -44,6 +59,11 @@
 		insert into BOARDFILE("NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", "REF", "STEP", "DEPTH", "REGDATE", "PASS", "FILE") 
 		values(BOARDFILE_SEQ.nextval, #{writer}, #{title}, #{content}, #{readcount}, #{ref}, #{step}, #{depth}, sysdate, #{pass}, #{file})
 	</insert>
+	
+	<!-- 조회수 추가 -->
+	<update id="counterPlus" parameterType="Integer">
+		update BOARDFILE set READCOUNT = READCOUNT + 1 where NUM =#{num}
+	</update>
 	
 	<!-- 답글용 -->
 	<update id="reply" parameterType="HashMap" >
