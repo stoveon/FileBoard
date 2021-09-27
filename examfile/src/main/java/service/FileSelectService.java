@@ -27,15 +27,12 @@ public class FileSelectService {
 		int pageBlock = 5;
 		int startNum = (currentPage -1) * pageBlock + 1;
 		int endNum = startNum + pageBlock-1;
-		int startPaging = 1;
+		int startPaging = 0;
 		int endPaging = (int) Math.ceil((double)totalCount / pageBlock);
-		
-		if(totalCount > 0) {
-			startPaging = 1;
-		}
 		
 		List<BoardDto> articleList = null;
 		if(totalCount > 0) {
+			startPaging = 1;
 			articleList = boardDao.getArticles(startNum, endNum);
 		}else {
 			articleList = Collections.emptyList();
@@ -144,28 +141,39 @@ public class FileSelectService {
 	}
 	
 	public Map<String, Object> search(int currentPage, SearchCommand search){
-		List<BoardDto> articleList = null;
-		if(search.getSearchType().equals("searchTitle")) {
-			String type = "TITLE";
-			articleList = boardDao.search(type, search.getSearchBox());
-		}else if(search.getSearchType().equals("searchContent")) {
-			String type = "CONTENT";
-			articleList = boardDao.search(type, search.getSearchBox());			
-		}else {
-			articleList = boardDao.searchTotal(search.getSearchBox());
-		}
 		
-		int totalCount = articleList.size();
+		Map<String, Object> searchCmd = new HashMap<>();
+		if(search.getSearchType().equals("searchTitle")) {
+//			String type = "TITLE";
+//			articleList = boardDao.search(type, search.getSearchBox());
+			searchCmd.put("type", "TITLE");
+			searchCmd.put("searchBox", search.getSearchBox());
+		}else if(search.getSearchType().equals("searchContent")) {
+			searchCmd.put("type", "CONTENT");
+			searchCmd.put("searchBox", search.getSearchBox());
+		}else {
+//			articleList = boardDao.searchTotal(search.getSearchBox());
+			searchCmd.put("type", "TITLE");
+			searchCmd.put("type", "CONTENT");
+			searchCmd.put("searchBox", search.getSearchBox());
+		}		
+		int totalCount = boardDao.searchCount(searchCmd);
 		int pageBlock = 5;
 		int startNum = (currentPage -1) * pageBlock + 1;
 		int endNum = startNum + pageBlock-1;
-		int startPaging = 1;
+		int startPaging = 0;
 		int endPaging = (int) Math.ceil((double)totalCount / pageBlock);
 		
+		List<BoardDto> articleList = null;
 		if(totalCount > 0) {
 			startPaging = 1;
+			searchCmd.put("startNum", startNum);
+			searchCmd.put("endNum", endNum);
+			articleList = boardDao.search2(searchCmd);
+		}else {
+			articleList = Collections.emptyList();
 		}
-
+		
 		Map<String, Object> list = new HashMap<String, Object>();
 		list.put("articleList", articleList);
 		list.put("startNum", startNum);

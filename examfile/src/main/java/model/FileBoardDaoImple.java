@@ -81,23 +81,31 @@ public class FileBoardDaoImple implements BoardDao{
 		return sqlSessionTemplate.selectOne("minNum");
 	}
 	@Override
+	public Map<String, Integer> maxAndMin() {
+		return sqlSessionTemplate.selectOne("maxAndMin");
+	}
+	@Override
 	public void updateExceptFile(BoardDto article) {
 		sqlSessionTemplate.update("updateExceptFile", article);
 	}
+//	@Override
+//	public List<BoardDto> search(String searchType, String searchBox) {
+//		Map<String, String> tmp = new HashMap<String, String>();
+//		tmp.put("type", searchType);
+//		tmp.put("search", searchBox);
+//		return sqlSessionTemplate.selectList("search", tmp);
+//	}
+//	@Override
+//	public List<BoardDto> searchTotal(String searchBox) {
+//		return sqlSessionTemplate.selectList("searchTotal", searchBox);
+//	}
 	@Override
-	public List<BoardDto> search(String searchType, String searchBox) {
-		Map<String, String> tmp = new HashMap<String, String>();
-		tmp.put("type", searchType);
-		tmp.put("search", searchBox);
-		return sqlSessionTemplate.selectList("search", tmp);
+	public List<BoardDto> search2(Map<String, Object> searchCmd) {
+		return sqlSessionTemplate.selectList("search2", searchCmd);
 	}
 	@Override
-	public List<BoardDto> searchTotal(String searchBox) {
-		return sqlSessionTemplate.selectList("searchTotal", searchBox);
-	}
-	@Override
-	public Map<String, Integer> maxAndMin() {
-		return sqlSessionTemplate.selectOne("maxAndMin");
+	public int searchCount(Map<String, Object> search) {
+		return sqlSessionTemplate.selectOne("searchCount", search);
 	}
 	
 }
