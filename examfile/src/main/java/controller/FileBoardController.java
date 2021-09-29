@@ -44,10 +44,10 @@ public class FileBoardController {
 		Map<String, Object> tmp = null;
 		List<BoardDto> articleList = null;
 		System.out.println("search: "+search.toString());
-			if(search.getSearchType() != null && search.getSearchType() == null) {
+			if(search.getSearchType() != null && search.getSearchBox() == null) {
 				model.addAttribute("msg-noneWord", "검색어를 입력하세요.");
 				return "redirect:/board/list";
-			}else if(search.getSearchType() != null && search.getSearchType() != null){
+			}else if(search.getSearchType() != null && search.getSearchBox() != null){
 				tmp = selectService.search(pageNum, search);
 				articleList = (List<BoardDto>) tmp.get("articleList");
 		}else {
@@ -70,7 +70,7 @@ public class FileBoardController {
 		model.addAttribute("endPaging", endPaging);
 		model.addAttribute("pageBlock", pageBlock);
 		model.addAttribute("totalCount", totalCount);
-
+		model.addAttribute("search", search);
 		return "list";
 	}
 	

@@ -66,7 +66,7 @@
 		<input type="button" onClick="javascript:location.href='${pageContext.request.contextPath}/board/update/${boardDto.num}'" value="수정">
 
 		<input type="button" onClick="javascript:location.href='${pageContext.request.contextPath}/board/delete/${boardDto.num}'" value="삭제">
-		<input type="button" onClick="javascript:location.href='${pageContext.request.contextPath}/board/list'" value="목록">
+		<input type="button" onClick="javascript:location.href='${pageContext.request.contextPath}/board/list<c:if test="${!empty searchUrl ? '?' += searchUrl : ''}" />'" value="목록" />
 		</form>
 </div>
 </section>

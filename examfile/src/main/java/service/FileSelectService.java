@@ -143,21 +143,23 @@ public class FileSelectService {
 	public Map<String, Object> search(int currentPage, SearchCommand search){
 		
 		Map<String, Object> searchCmd = new HashMap<>();
+		int totalCount = 0;
 		if(search.getSearchType().equals("searchTitle")) {
 //			String type = "TITLE";
 //			articleList = boardDao.search(type, search.getSearchBox());
 			searchCmd.put("type", "TITLE");
 			searchCmd.put("searchBox", search.getSearchBox());
+			totalCount = boardDao.searchCount(searchCmd);
 		}else if(search.getSearchType().equals("searchContent")) {
 			searchCmd.put("type", "CONTENT");
 			searchCmd.put("searchBox", search.getSearchBox());
+			totalCount = boardDao.searchCount(searchCmd);
 		}else {
 //			articleList = boardDao.searchTotal(search.getSearchBox());
-			searchCmd.put("type", "TITLE");
-			searchCmd.put("type", "CONTENT");
 			searchCmd.put("searchBox", search.getSearchBox());
-		}		
-		int totalCount = boardDao.searchCount(searchCmd);
+			totalCount = boardDao.searchTotalCount(searchCmd);
+		}
+
 		int pageBlock = 5;
 		int startNum = (currentPage -1) * pageBlock + 1;
 		int endNum = startNum + pageBlock-1;
@@ -169,7 +171,11 @@ public class FileSelectService {
 			startPaging = 1;
 			searchCmd.put("startNum", startNum);
 			searchCmd.put("endNum", endNum);
-			articleList = boardDao.search2(searchCmd);
+			if(search.getSearchType().equals("searchTotal")) {
+				articleList = boardDao.searchTotal(searchCmd);
+			}else {
+				articleList = boardDao.search2(searchCmd);
+			}
 		}else {
 			articleList = Collections.emptyList();
 		}

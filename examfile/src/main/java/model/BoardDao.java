@@ -19,7 +19,8 @@ public interface BoardDao {
 	public Map<String, Integer> maxAndMin();
 	public void updateExceptFile(BoardDto article);
 //	public List<BoardDto> search(String searchType, String searchBox);
-//	public List<BoardDto> searchTotal(String searchBox);
-	public List<BoardDto> search2(Map<String, Object> search);
-	public int searchCount(Map<String, Object> search);
+	public List<BoardDto> searchTotal(Map<String, Object> searchCmd);
+	public List<BoardDto> search2(Map<String, Object> searchCmd);
+	public int searchCount(Map<String, Object> searchCmd);
+	public int searchTotalCount(Map<String, Object> searchCmd);
 }

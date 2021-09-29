@@ -32,15 +32,22 @@
 			<c:if test="${totalCount > 0}">
 			<div>
 			<c:if test="">
-			<c:set var="searchUrl" value="${empty searchBox ? '' : 'searchType=' += searchType += '&searchBox=' += searchBox}" />
+			<%-- <c:set var="searchUrl" value="${empty searchBox ? '' : 'searchType=' += searchType += '&searchBox=' += searchBox}" /> --%>
+			<c:when test="${!empty search.searchBox}">
+			<c:set var="searchUrl" value="searchType=${search.searchType}&searchBox=${search.searchBox}&" />			
+			<input type="hidden" name="searchUrl" value="${searchUrl}" /> 
+			</c:when>
+			<c:otherwise>
+			<c:set var="searchUrl" value="" />
+			</c:otherwise>
 			</c:if>
 			<form action="<c:url value="/board/list"/>">
 				<select id="searchType" name="searchType" size="1">
-					<option value="searchTotal" <c:if test="${searchType eq 'searchTotal'}">selected</c:if>>전체</option>
-					<option value="searchTitle" <c:if test="${searchType eq 'searchTitle'}">selected</c:if>>제목</option>
-					<option value="searchContent" <c:if test="${searchType eq 'searchContent'}">selected</c:if>>내용</option>
+					<option value="searchTotal" <c:if test="${search.searchType eq 'searchTotal'}">selected</c:if>>전체</option>
+					<option value="searchTitle" <c:if test="${search.searchType eq 'searchTitle'}">selected</c:if>>제목</option>
+					<option value="searchContent" <c:if test="${search.searchType eq 'searchContent'}">selected</c:if>>내용</option>
 				</select>
-				<input type="search" name="searchBox" value="${searchBox}"/>&nbsp;
+				<input type="search" name="searchBox" value="${search.searchBox}"/>&nbsp;
 				<input type="submit" value="검색" />
 			</form>
 			</div><br>

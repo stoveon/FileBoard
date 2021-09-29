@@ -46,24 +46,30 @@
 		select rownum RNUM, "NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", "REF", "STEP", "DEPTH", "REGDATE", "PASS", "FILE"
 		from (select * from BOARDFILE order by BOARDFILE."REF" desc, BOARDFILE."STEP", BOARDFILE."REGDATE" desc) 
 		where ${type} like '%' || #{search} || '%'
-	</select>
+	</select>  -->
 
-	<select id="searchTotal" parameterType="String" resultType="boardDto">
-		select rownum RNUM, "NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", "REF", "STEP", "DEPTH", "REGDATE", "PASS", "FILE"
-		from (select * from BOARDFILE order by BOARDFILE."REF" desc, BOARDFILE."STEP", BOARDFILE."REGDATE" desc)) 
-		where "TITLE" like '%' || #{searchTotal} || '%' or "CONTENT" like '%' || #{searchTotal} || '%'
-	</select> -->
+	<select id="searchTotal" parameterType="HashMap" resultType="boardDto">
+		select * from(select rownum RNUM, "NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", "REF", "STEP", "DEPTH", "REGDATE", "PASS", "FILE"
+		from (select * from BOARDFILE order by BOARDFILE."REF" desc, BOARDFILE."STEP", BOARDFILE."REGDATE" desc)
+		where "TITLE" like '%' || #{searchBox} || '%' or "CONTENT" like '%' || #{searchBox} || '%') where RNUM <![CDATA[>=]]> #{startNum} and RNUM <![CDATA[<=]]> #{endNum}	
+	</select>
+	
+	<select id="searchTotalCount" parameterType="HashMap" resultType="Integer">
+		select count(*) from(select distinct rownum RNUM, "NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", "REF", "STEP", "DEPTH", "REGDATE", "PASS", "FILE"
+		from (select * from BOARDFILE order by BOARDFILE."REF" desc, BOARDFILE."STEP", BOARDFILE."REGDATE" desc) 
+		where "TITLE" like '%' || #{searchBox} || '%' or "CONTENT" like '%' || #{searchBox} || '%')
+	</select>
 	
 	<select id="search2" parameterType="HashMap" resultType="boardDto">
 		select * from(select rownum RNUM, "NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", "REF", "STEP", "DEPTH", "REGDATE", "PASS", "FILE"
 		from (select * from BOARDFILE order by BOARDFILE."REF" desc, BOARDFILE."STEP", BOARDFILE."REGDATE" desc) 
-		where ${type}" like '%' || #{searchTotal} || '%') where RNUM <![CDATA[>=]]> #{startNum} and RNUM <![CDATA[<=]]> #{endNum}	
+		where ${type} like '%' || #{searchBox} || '%') where RNUM <![CDATA[>=]]> #{startNum} and RNUM <![CDATA[<=]]> #{endNum}	
 	</select>
 	
-	<select id="searchCount" parameterType="HashMap" resultType="boardDto">
+	<select id="searchCount" parameterType="HashMap" resultType="Integer">
 		select count(*) from(select distinct rownum RNUM, "NUM", "WRITER", "TITLE", "CONTENT", "READCOUNT", "REF", "STEP", "DEPTH", "REGDATE", "PASS", "FILE"
 		from (select * from BOARDFILE order by BOARDFILE."REF" desc, BOARDFILE."STEP", BOARDFILE."REGDATE" desc) 
-		where ${type}" like '%' || #{searchBox} || '%')
+		where ${type} like '%' || #{searchBox} || '%')
 	</select>
 	
 	<!-- 게시글 추가 -->

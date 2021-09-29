@@ -95,17 +95,21 @@ public class FileBoardDaoImple implements BoardDao{
 //		tmp.put("search", searchBox);
 //		return sqlSessionTemplate.selectList("search", tmp);
 //	}
-//	@Override
-//	public List<BoardDto> searchTotal(String searchBox) {
-//		return sqlSessionTemplate.selectList("searchTotal", searchBox);
-//	}
+	@Override
+	public List<BoardDto> searchTotal(Map<String, Object> searchCmd) {
+		return sqlSessionTemplate.selectList("searchTotal", searchCmd);
+	}
 	@Override
 	public List<BoardDto> search2(Map<String, Object> searchCmd) {
 		return sqlSessionTemplate.selectList("search2", searchCmd);
 	}
 	@Override
-	public int searchCount(Map<String, Object> search) {
-		return sqlSessionTemplate.selectOne("searchCount", search);
+	public int searchCount(Map<String, Object> searchCmd) {
+		return sqlSessionTemplate.selectOne("searchCount", searchCmd);
+	}
+	@Override
+	public int searchTotalCount(Map<String, Object> searchCmd) {
+		return sqlSessionTemplate.selectOne("searchTotalCount", searchCmd);
 	}
 	
 }
