@@ -16,4 +16,5 @@
 	</mvc:view-resolvers>
 	
 	<bean name="/index" class="controller.IndexController"/>
+	
 </beans>

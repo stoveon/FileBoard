@@ -1,12 +1,14 @@
 package model;
 
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class AgreeCommand {
-	private String agreeAll;
-	private String agreeTerms;
-	private String agreeTermsSel;
-	public String getAgreeTerms() {
+	private static String agreeAll;
+	private static String agreeTerms;
+	private static String agreeTermsSel;
+	public static String getAgreeTerms() {
 		return agreeTerms;
 	}
 	public void setAgreeTerms(String agreeTerms) {
@@ -29,10 +31,10 @@ public class AgreeCommand {
 		return "AgreeCommand [agreeAll=" + agreeAll + ", agreeTerms=" + agreeTerms + ", agreeTermsSel=" + agreeTermsSel
 				+ "]";
 	}
-	public boolean essential() {
+	public static boolean essential() {
 		if(agreeTerms == null) {
 			return false;
-		}else if(agreeTerms.equals("serviceAgree") && agreeTerms.equals("personalInformationAgree")){
+		}else if(agreeTerms.equals("serviceAgree,personalInformationAgree")){
 			return true;
 		}else if(agreeAll != null){
 			return true;

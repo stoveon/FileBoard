@@ -10,10 +10,15 @@
 </head>
 <body style="text-align: auto;">
 <h2>회원 정보 입력</h2>
-	<form:form action="join2" method="post" commandName="joinCommand">
+	<form:form action="/join2" method="post" modelAttribute="joinCommand" >
 		<b>아이디</b><br>
-		<form:input path="email" />
-		<form:errors path="email"/><br><br>
+		<form:input path="emailId" />@
+		<form:errors path="emailId"/><br><br>
+		<form:select path="emailAdd">
+		<form:option value="@naver.com"/>
+		<form:option value="@daum.net"/>
+		<form:option value="@gmail.com"/>
+		</form:select>
 		<b>비밀번호</b><br>
 		<form:password path="password" />
 		<form:errors path="password"/><br><br>
@@ -51,7 +56,7 @@
 		<form:input path="phoneNumberThree" />
 		<form:errors path="phoneNumberThree"/><br><br>
 		<b>주소</b><br>
-		<form:input path="address" /> 
+		<form:input path="address" placeholder="ex)서울시 종로구"/> 
 		<input type="submit" value="가입하기" />
 	</form:form>
 </body>
