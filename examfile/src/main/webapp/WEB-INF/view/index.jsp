@@ -4,4 +4,5 @@
 
 <h2>${data}</h2><br>
 <a href="<c:url value="/board/join"/>" >회원가입</a><br>
-<a href="<c:url value="/board/list"/>" >게시판으로 이동</a>
+<a href="<c:url value="/board/list"/>" >게시판으로 이동</a><br>
+<a href="<c:url value="/multi/multiUpload"/>" >다중 파일 업로드 폼</a>

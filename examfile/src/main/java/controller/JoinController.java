@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,9 +53,12 @@ public class JoinController {
 	}
 	
 	@RequestMapping(value="join2", method = RequestMethod.POST)
-	public ModelAndView joinInformation(ModelAndView mv, @ModelAttribute("joinCommand") @Valid JoinCommand joinCommand) {
+	public ModelAndView joinInformation(ModelAndView mv, 
+			@ModelAttribute("joinCommand") @Valid JoinCommand joinCommand, BindingResult bindingResult) {
 		System.out.println("join2.post");
-
+		if(joinCommand.passCheck() == false) {
+			
+		}
 		mv.setViewName("join/joinComplete");
 		return mv;
 	}

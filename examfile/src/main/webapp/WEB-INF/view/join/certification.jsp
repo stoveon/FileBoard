@@ -13,12 +13,12 @@
 	<form:form action="/join2" method="post" modelAttribute="joinCommand" >
 		<b>아이디</b><br>
 		<form:input path="emailId" />@
-		<form:errors path="emailId"/><br><br>
+		<form:errors path="emailId"/>
 		<form:select path="emailAdd">
-		<form:option value="@naver.com"/>
-		<form:option value="@daum.net"/>
-		<form:option value="@gmail.com"/>
-		</form:select>
+		<form:option value="@naver.com">naver.com</form:option>
+		<form:option value="@daum.net">daum.net</form:option>
+		<form:option value="@gmail.com">gmail.com</form:option>
+		</form:select><br><br>
 		<b>비밀번호</b><br>
 		<form:password path="password" />
 		<form:errors path="password"/><br><br>

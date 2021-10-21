@@ -1,7 +1,13 @@
 package model;
 
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.Range;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 @Repository()
@@ -18,12 +24,12 @@ public class JoinCommand {
 	private String nickName;
 	@NotEmpty(message = "필수입력")
 	@Length(max = 4, min = 4)
+	@Range(min = 1900, max = 2021)
 	private String birthYear;
 	@NotEmpty(message = "필수입력")
-	@Length(max = 2)
 	private String birthMonth;
 	@NotEmpty(message = "필수입력")
-	@Length(max = 2)
+	@Range(min = 1, max = 31)
 	private String birthDay;
 	@NotEmpty(message = "필수입력")
 	private String phoneNumberOne;
